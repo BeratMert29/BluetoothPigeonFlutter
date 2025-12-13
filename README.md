@@ -1,14 +1,16 @@
 # Bluetooth Pigeon (Flutter)
 
-Bluetooth Pigeon is a Flutter application created to experiment with **Bluetooth Low Energy (BLE)** communication between mobile devices.  
-The project focuses on **phone-to-phone BLE scanning, advertising, and connecting**, making it suitable for short-range communication and indoor positioning experiments.
+Bluetooth Pigeon is a **Flutter-based Bluetooth Low Energy (BLE) chat application** that enables **direct, offline phone-to-phone messaging**.  
+The app uses BLE scanning, advertising, and connections to allow nearby devices to discover each other and exchange messages **without internet access**.
 
 ---
 
 ## 🚀 Features
-- BLE device scanning (Central role)
-- BLE advertising / peripheral mode
-- Connect to nearby BLE devices
+- BLE-based **offline chat** (phone ↔ phone)
+- Device scanning (Central role)
+- BLE advertising (Peripheral role)
+- Direct connection to nearby devices
+- Message exchange over BLE characteristics
 - Runtime Bluetooth & permission handling
 - Multi-platform Flutter project structure
 
@@ -17,7 +19,7 @@ The project focuses on **phone-to-phone BLE scanning, advertising, and connectin
 ## 🛠 Tech Stack
 - **Flutter (Dart)**
 - **Bluetooth Low Energy (BLE)**
-- Flutter packages commonly used in this project:
+- Flutter packages used:
   - `flutter_blue_plus`
   - `flutter_ble_peripheral`
   - `permission_handler`
@@ -28,7 +30,7 @@ The project focuses on **phone-to-phone BLE scanning, advertising, and connectin
 ## 📱 Supported Platforms
 - Android ✅ (recommended)
 - iOS ⚠️ (with platform limitations)
-- Desktop / Web ❌ (BLE not fully supported)
+- Desktop / Web ❌ (BLE not supported)
 
 > BLE functionality works best on **real devices**, not emulators.
 
@@ -36,17 +38,16 @@ The project focuses on **phone-to-phone BLE scanning, advertising, and connectin
 
 ## ⚙️ Installation & Run
 
-### 1️⃣ Clone the repository
+1. Clone the repository
 ```bash
 git clone https://github.com/BeratMert29/BluetoothPigeonFlutter.git
 cd BluetoothPigeonFlutter
 ```
-### 2️⃣ Install dependencies
+2. Install dependencies
 ```
 flutter pub get
 ```
-
-### 3️⃣ Run the app
+3. Run the app
 ```
 flutter run
 ```
