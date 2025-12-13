@@ -43,7 +43,7 @@ cd BluetoothPigeonFlutter
 ```
 ### 2️⃣ Install dependencies
 ```
-  flutter pub get
+flutter pub get
 ```
 
 ### 3️⃣ Run the app
