@@ -40,9 +40,13 @@ The project focuses on **phone-to-phone BLE scanning, advertising, and connectin
 ```bash
 git clone https://github.com/BeratMert29/BluetoothPigeonFlutter.git
 cd BluetoothPigeonFlutter
-
+```
 ### 2️⃣ Install dependencies
-flutter pub get
+```
+  flutter pub get
+```
 
 ### 3️⃣ Run the app
+```
 flutter run
+```
