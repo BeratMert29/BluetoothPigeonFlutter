@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-/// A message input widget with send button
 class MessageInput extends StatefulWidget {
   final Function(String) onSend;
   final bool enabled;
@@ -23,9 +22,8 @@ class _MessageInputState extends State<MessageInput> {
   void initState() {
     super.initState();
     _controller.addListener(() {
-      setState(() {
-        _hasText = _controller.text.trim().isNotEmpty;
-      });
+      final has = _controller.text.trim().isNotEmpty;
+      if (has != _hasText) setState(() => _hasText = has);
     });
   }
 
@@ -49,30 +47,32 @@ class _MessageInputState extends State<MessageInput> {
       padding: EdgeInsets.only(
         left: 16,
         right: 16,
-        top: 12,
-        bottom: MediaQuery.of(context).padding.bottom + 12,
+        top: 10,
+        bottom: MediaQuery.of(context).padding.bottom + 10,
       ),
       decoration: BoxDecoration(
-        color: const Color(0xFF161B22),
+        color: const Color(0xFF0F1020),
         border: Border(
           top: BorderSide(
-            color: Colors.white.withOpacity(0.1),
+            color: Colors.white.withValues(alpha: 0.07),
             width: 1,
           ),
         ),
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           Expanded(
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              constraints: const BoxConstraints(maxHeight: 120),
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 2),
               decoration: BoxDecoration(
-                color: const Color(0xFF21262D),
-                borderRadius: BorderRadius.circular(24),
+                color: const Color(0xFF151B27),
+                borderRadius: BorderRadius.circular(26),
                 border: Border.all(
                   color: _hasText
-                      ? const Color(0xFF00D9FF).withOpacity(0.3)
-                      : Colors.transparent,
+                      ? const Color(0xFF5B7BFE).withValues(alpha: 0.4)
+                      : Colors.white.withValues(alpha: 0.06),
                   width: 1,
                 ),
               ),
@@ -82,14 +82,17 @@ class _MessageInputState extends State<MessageInput> {
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 15,
+                  height: 1.4,
                 ),
                 decoration: InputDecoration(
                   border: InputBorder.none,
-                  hintText: widget.enabled ? 'Type a message...' : 'Connecting...',
+                  hintText: widget.enabled ? 'Message...' : 'Not connected',
                   hintStyle: TextStyle(
-                    color: Colors.white.withOpacity(0.3),
+                    color: Colors.white.withValues(alpha: 0.25),
+                    fontSize: 15,
                   ),
-                  contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                  contentPadding: const EdgeInsets.symmetric(vertical: 11),
+                  isDense: true,
                 ),
                 textInputAction: TextInputAction.send,
                 onSubmitted: (_) => _send(),
@@ -98,39 +101,42 @@ class _MessageInputState extends State<MessageInput> {
               ),
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 10),
           GestureDetector(
             onTap: _hasText && widget.enabled ? _send : null,
             child: AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              width: 48,
-              height: 48,
+              duration: const Duration(milliseconds: 180),
+              curve: Curves.easeOut,
+              width: 44,
+              height: 44,
               decoration: BoxDecoration(
+                shape: BoxShape.circle,
                 gradient: _hasText && widget.enabled
                     ? const LinearGradient(
-                        colors: [Color(0xFF00D9FF), Color(0xFF0099FF)],
+                        colors: [Color(0xFF5B7BFE), Color(0xFF8B5CF6)],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       )
                     : null,
-                color: _hasText && widget.enabled ? null : const Color(0xFF21262D),
-                shape: BoxShape.circle,
+                color: _hasText && widget.enabled
+                    ? null
+                    : Colors.white.withValues(alpha: 0.06),
                 boxShadow: _hasText && widget.enabled
                     ? [
                         BoxShadow(
-                          color: const Color(0xFF00D9FF).withOpacity(0.3),
-                          blurRadius: 12,
-                          spreadRadius: 2,
+                          color: const Color(0xFF5B7BFE).withValues(alpha: 0.4),
+                          blurRadius: 14,
+                          offset: const Offset(0, 4),
                         ),
                       ]
                     : null,
               ),
               child: Icon(
-                Icons.send_rounded,
+                Icons.arrow_upward_rounded,
                 color: _hasText && widget.enabled
-                    ? const Color(0xFF0D1117)
-                    : Colors.white.withOpacity(0.3),
-                size: 22,
+                    ? Colors.white
+                    : Colors.white.withValues(alpha: 0.2),
+                size: 20,
               ),
             ),
           ),
@@ -139,4 +145,3 @@ class _MessageInputState extends State<MessageInput> {
     );
   }
 }
-

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../models/chat_message.dart';
 
-/// A chat bubble widget for displaying messages
 class ChatBubble extends StatelessWidget {
   final ChatMessage message;
   final bool isMe;
@@ -16,81 +15,101 @@ class ChatBubble extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(
-        left: isMe ? 48 : 0,
-        right: isMe ? 0 : 48,
-        bottom: 12,
+        left: isMe ? 64 : 0,
+        right: isMe ? 0 : 64,
+        bottom: 10,
       ),
       child: Column(
-        crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        crossAxisAlignment:
+            isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: [
-          // Sender name and time
-          Padding(
-            padding: const EdgeInsets.only(bottom: 4, left: 12, right: 12),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  message.from,
-                  style: TextStyle(
-                    color: isMe
-                        ? const Color(0xFF00D9FF).withOpacity(0.8)
-                        : const Color(0xFF00FF94).withOpacity(0.8),
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  message.formattedTime,
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.3),
-                    fontSize: 10,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          
-          // Message bubble
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: BoxDecoration(
-              gradient: isMe
-                  ? const LinearGradient(
-                      colors: [Color(0xFF00D9FF), Color(0xFF0099FF)],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    )
-                  : null,
-              color: isMe ? null : const Color(0xFF21262D),
-              borderRadius: BorderRadius.only(
-                topLeft: const Radius.circular(18),
-                topRight: const Radius.circular(18),
-                bottomLeft: Radius.circular(isMe ? 18 : 4),
-                bottomRight: Radius.circular(isMe ? 4 : 18),
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: isMe
-                      ? const Color(0xFF00D9FF).withOpacity(0.2)
-                      : Colors.black.withOpacity(0.2),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Text(
-              message.message,
-              style: TextStyle(
-                color: isMe ? const Color(0xFF0D1117) : Colors.white,
-                fontSize: 15,
-                fontWeight: isMe ? FontWeight.w500 : FontWeight.normal,
-              ),
-            ),
-          ),
+          _buildMetaRow(),
+          const SizedBox(height: 4),
+          _buildBubble(),
         ],
       ),
     );
   }
-}
 
+  Widget _buildMetaRow() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (!isMe) ...[
+            Text(
+              message.from,
+              style: const TextStyle(
+                color: Color(0xFF8B5CF6),
+                fontSize: 11.5,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 0.1,
+              ),
+            ),
+            const SizedBox(width: 6),
+          ],
+          Text(
+            message.formattedTime,
+            style: TextStyle(
+              color: Colors.white.withValues(alpha: 0.28),
+              fontSize: 10.5,
+            ),
+          ),
+          if (isMe) ...[
+            const SizedBox(width: 6),
+            Text(
+              message.from,
+              style: const TextStyle(
+                color: Color(0xFF5B7BFE),
+                fontSize: 11.5,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 0.1,
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBubble() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 11),
+      decoration: BoxDecoration(
+        gradient: isMe
+            ? const LinearGradient(
+                colors: [Color(0xFF5B7BFE), Color(0xFF7C5CF6)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              )
+            : null,
+        color: isMe ? null : const Color(0xFF151B27),
+        borderRadius: BorderRadius.only(
+          topLeft: const Radius.circular(18),
+          topRight: const Radius.circular(18),
+          bottomLeft: Radius.circular(isMe ? 18 : 5),
+          bottomRight: Radius.circular(isMe ? 5 : 18),
+        ),
+        boxShadow: isMe
+            ? [
+                BoxShadow(
+                  color: const Color(0xFF5B7BFE).withValues(alpha: 0.25),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ]
+            : null,
+      ),
+      child: Text(
+        message.message,
+        style: TextStyle(
+          color: isMe ? Colors.white : Colors.white.withValues(alpha: 0.88),
+          fontSize: 15,
+          height: 1.4,
+          fontWeight: isMe ? FontWeight.w500 : FontWeight.w400,
+        ),
+      ),
+    );
+  }
+}

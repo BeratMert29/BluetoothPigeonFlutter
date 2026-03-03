@@ -4,23 +4,21 @@ import 'ui/role_selection_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  // Set preferred orientations
+
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-  
-  // Set system UI overlay style
+
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
       statusBarIconBrightness: Brightness.light,
-      systemNavigationBarColor: Color(0xFF0D1117),
+      systemNavigationBarColor: Color(0xFF09091A),
       systemNavigationBarIconBrightness: Brightness.light,
     ),
   );
-  
+
   runApp(const BleChat());
 }
 
@@ -35,18 +33,22 @@ class BleChat extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
         brightness: Brightness.dark,
-        scaffoldBackgroundColor: const Color(0xFF0D1117),
-        colorScheme: const ColorScheme.dark(
-          primary: Color(0xFF00D9FF),
-          secondary: Color(0xFF00FF94),
-          surface: Color(0xFF161B22),
-          error: Color(0xFFFF453A),
+        scaffoldBackgroundColor: const Color(0xFF09091A),
+        colorScheme: ColorScheme.dark(
+          primary: const Color(0xFF5B7BFE),
+          secondary: const Color(0xFF8B5CF6),
+          surface: const Color(0xFF0F1020),
+          error: const Color(0xFFF43F5E),
         ),
         appBarTheme: const AppBarTheme(
-          backgroundColor: Color(0xFF161B22),
+          backgroundColor: Color(0xFF0F1020),
           elevation: 0,
+          scrolledUnderElevation: 0,
+          surfaceTintColor: Colors.transparent,
         ),
-        fontFamily: 'SF Pro Display',
+        inputDecorationTheme: const InputDecorationTheme(
+          border: InputBorder.none,
+        ),
       ),
       home: const RoleSelectionScreen(),
     );

@@ -4,7 +4,6 @@ import '../ble/ble_client_controller.dart';
 import 'widgets/chat_bubble.dart';
 import 'widgets/message_input.dart';
 
-/// Chat screen for Client mode (Phone B - Central)
 class ClientChatScreen extends StatefulWidget {
   const ClientChatScreen({super.key});
 
@@ -14,7 +13,8 @@ class ClientChatScreen extends StatefulWidget {
 
 class _ClientChatScreenState extends State<ClientChatScreen> {
   late BleClientController _controller;
-  final TextEditingController _nameController = TextEditingController(text: 'Client');
+  final TextEditingController _nameController =
+      TextEditingController(text: 'Client');
   final ScrollController _scrollController = ScrollController();
 
   @override
@@ -56,20 +56,18 @@ class _ClientChatScreenState extends State<ClientChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0D1117),
+      backgroundColor: const Color(0xFF09091A),
       appBar: _buildAppBar(),
       body: Column(
         children: [
-          _buildStatusBar(),
+          _buildStatusStrip(),
           if (!_controller.isConnected) ...[
             _buildControlPanel(),
             Expanded(child: _buildDeviceList()),
           ] else ...[
             Expanded(child: _buildMessageList()),
             MessageInput(
-              onSend: (text) {
-                _controller.sendMessage(text);
-              },
+              onSend: _controller.sendMessage,
               enabled: _controller.isConnected,
             ),
           ],
@@ -80,25 +78,26 @@ class _ClientChatScreenState extends State<ClientChatScreen> {
 
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
-      backgroundColor: const Color(0xFF161B22),
+      backgroundColor: const Color(0xFF0F1020),
       elevation: 0,
       leading: IconButton(
-        icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+        icon:
+            const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
         onPressed: () => Navigator.pop(context),
       ),
+      titleSpacing: 0,
       title: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(8),
+            width: 36,
+            height: 36,
             decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFF00FF94), Color(0xFF00CC76)],
-              ),
+              color: const Color(0xFF8B5CF6).withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(10),
             ),
             child: const Icon(
-              Icons.phone_android,
-              color: Color(0xFF0D1117),
+              Icons.phone_android_rounded,
+              color: Color(0xFF8B5CF6),
               size: 20,
             ),
           ),
@@ -110,17 +109,18 @@ class _ClientChatScreenState extends State<ClientChatScreen> {
                 'Client Mode',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: -0.2,
                 ),
               ),
               Text(
                 _controller.isConnected
-                    ? 'Connected to ${_controller.connectedDevice?.platformName ?? "Server"}'
+                    ? _controller.connectedDevice?.platformName ?? 'Connected'
                     : 'BLE Central',
-                style: const TextStyle(
-                  color: Color(0xFF00FF94),
-                  fontSize: 11,
+                style: TextStyle(
+                  color: const Color(0xFF8B5CF6).withValues(alpha: 0.8),
+                  fontSize: 11.5,
                 ),
               ),
             ],
@@ -130,47 +130,54 @@ class _ClientChatScreenState extends State<ClientChatScreen> {
       actions: [
         if (_controller.isConnected)
           IconButton(
-            icon: const Icon(Icons.link_off, color: Color(0xFFFF453A)),
-            onPressed: () => _controller.disconnect(),
+            icon: Icon(
+              Icons.link_off_rounded,
+              color: Colors.white.withValues(alpha: 0.5),
+              size: 22,
+            ),
+            onPressed: _controller.disconnect,
           ),
+        const SizedBox(width: 4),
       ],
     );
   }
 
-  Widget _buildStatusBar() {
+  Widget _buildStatusStrip() {
+    final color = _controller.isConnected
+        ? const Color(0xFF22D3A5)
+        : _controller.isScanning
+            ? const Color(0xFFF59E0B)
+            : const Color(0xFFF43F5E);
+
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
       decoration: BoxDecoration(
-        color: const Color(0xFF161B22),
+        color: const Color(0xFF0F1020),
         border: Border(
-          bottom: BorderSide(
-            color: Colors.white.withOpacity(0.1),
-            width: 1,
-          ),
+          bottom: BorderSide(color: Colors.white.withValues(alpha: 0.06), width: 1),
         ),
       ),
       child: Row(
         children: [
           Container(
-            width: 8,
-            height: 8,
+            width: 7,
+            height: 7,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: _controller.isConnected
-                  ? const Color(0xFF00FF94)
-                  : (_controller.isScanning
-                      ? const Color(0xFFFFD60A)
-                      : const Color(0xFFFF453A)),
+              color: color,
+              boxShadow: [
+                BoxShadow(color: color.withValues(alpha: 0.5), blurRadius: 5),
+              ],
             ),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: 10),
           Expanded(
             child: Text(
               _controller.status,
               style: TextStyle(
-                color: Colors.white.withOpacity(0.7),
-                fontSize: 13,
+                color: Colors.white.withValues(alpha: 0.5),
+                fontSize: 12.5,
               ),
               overflow: TextOverflow.ellipsis,
             ),
@@ -182,49 +189,34 @@ class _ClientChatScreenState extends State<ClientChatScreen> {
 
   Widget _buildControlPanel() {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
       decoration: BoxDecoration(
-        color: const Color(0xFF161B22).withOpacity(0.5),
+        color: const Color(0xFF0F1020),
+        border: Border(
+          bottom: BorderSide(color: Colors.white.withValues(alpha: 0.06), width: 1),
+        ),
       ),
       child: Column(
         children: [
-          // Name input
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            decoration: BoxDecoration(
-              color: const Color(0xFF21262D),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: TextField(
-              controller: _nameController,
-              style: const TextStyle(color: Colors.white),
-              decoration: InputDecoration(
-                border: InputBorder.none,
-                hintText: 'Your name',
-                hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
-                prefixIcon: Icon(
-                  Icons.person_outline,
-                  color: Colors.white.withOpacity(0.5),
-                ),
-              ),
-              onChanged: (value) {
-                _controller.setDeviceName(value.isEmpty ? 'Client' : value);
-              },
-            ),
+          // Name field
+          _buildNameField(
+            controller: _nameController,
+            onChanged: (v) => _controller.setDeviceName(v.isEmpty ? 'Client' : v),
           ),
-          const SizedBox(height: 16),
-          
+          const SizedBox(height: 12),
           // Scan buttons
           Row(
             children: [
               Expanded(
-                child: _buildControlButton(
+                child: _buildButton(
                   label: _controller.isScanning ? 'Stop Scan' : 'Scan Services',
-                  icon: _controller.isScanning ? Icons.stop : Icons.bluetooth_searching,
+                  icon: _controller.isScanning
+                      ? Icons.stop_rounded
+                      : Icons.bluetooth_searching_rounded,
                   color: _controller.isScanning
-                      ? const Color(0xFFFF453A)
-                      : const Color(0xFF00D9FF),
-                  onPressed: () async {
+                      ? const Color(0xFFF43F5E)
+                      : const Color(0xFF5B7BFE),
+                  onTap: () async {
                     if (_controller.isScanning) {
                       await _controller.stopScan();
                     } else {
@@ -233,17 +225,15 @@ class _ClientChatScreenState extends State<ClientChatScreen> {
                   },
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 10),
               Expanded(
-                child: _buildControlButton(
+                child: _buildButton(
                   label: 'Scan All',
-                  icon: Icons.search,
-                  color: const Color(0xFF00FF94),
-                  onPressed: _controller.isScanning
+                  icon: Icons.radar_rounded,
+                  color: const Color(0xFF8B5CF6),
+                  onTap: _controller.isScanning
                       ? null
-                      : () async {
-                          await _controller.startScanAll();
-                        },
+                      : () async => await _controller.startScanAll(),
                 ),
               ),
             ],
@@ -253,44 +243,79 @@ class _ClientChatScreenState extends State<ClientChatScreen> {
     );
   }
 
-  Widget _buildControlButton({
+  Widget _buildNameField({
+    required TextEditingController controller,
+    required ValueChanged<String> onChanged,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14),
+      decoration: BoxDecoration(
+        color: const Color(0xFF151B27),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.07), width: 1),
+      ),
+      child: TextField(
+        controller: controller,
+        style: const TextStyle(color: Colors.white, fontSize: 14),
+        decoration: InputDecoration(
+          border: InputBorder.none,
+          hintText: 'Your display name',
+          hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.25), fontSize: 14),
+          prefixIcon: Icon(
+            Icons.badge_outlined,
+            color: Colors.white.withValues(alpha: 0.3),
+            size: 18,
+          ),
+          prefixIconConstraints: const BoxConstraints(minWidth: 40),
+          contentPadding: const EdgeInsets.symmetric(vertical: 13),
+          isDense: true,
+        ),
+        onChanged: onChanged,
+      ),
+    );
+  }
+
+  Widget _buildButton({
     required String label,
     required IconData icon,
     required Color color,
-    VoidCallback? onPressed,
+    VoidCallback? onTap,
   }) {
-    final isEnabled = onPressed != null;
-    
-    return GestureDetector(
-      onTap: onPressed,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 14),
-        decoration: BoxDecoration(
-          color: isEnabled ? color.withOpacity(0.15) : Colors.grey.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isEnabled ? color.withOpacity(0.5) : Colors.grey.withOpacity(0.2),
-            width: 1,
+    final enabled = onTap != null;
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: onTap,
+        child: Ink(
+          padding: const EdgeInsets.symmetric(vertical: 13),
+          decoration: BoxDecoration(
+            color: enabled ? color.withValues(alpha: 0.1) : Colors.white.withValues(alpha: 0.03),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: enabled ? color.withValues(alpha: 0.35) : Colors.white.withValues(alpha: 0.07),
+              width: 1,
+            ),
           ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              icon,
-              color: isEnabled ? color : Colors.grey,
-              size: 20,
-            ),
-            const SizedBox(width: 8),
-            Text(
-              label,
-              style: TextStyle(
-                color: isEnabled ? color : Colors.grey,
-                fontWeight: FontWeight.w600,
-                fontSize: 13,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                icon,
+                color: enabled ? color : Colors.white.withValues(alpha: 0.2),
+                size: 18,
               ),
-            ),
-          ],
+              const SizedBox(width: 7),
+              Text(
+                label,
+                style: TextStyle(
+                  color: enabled ? color : Colors.white.withValues(alpha: 0.2),
+                  fontWeight: FontWeight.w600,
+                  fontSize: 13,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -298,45 +323,23 @@ class _ClientChatScreenState extends State<ClientChatScreen> {
 
   Widget _buildDeviceList() {
     final devices = _controller.scanResults;
-    
+
     if (devices.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              _controller.isScanning ? Icons.bluetooth_searching : Icons.bluetooth_disabled,
-              size: 64,
-              color: Colors.white.withOpacity(0.2),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              _controller.isScanning ? 'Scanning...' : 'No devices found',
-              style: TextStyle(
-                color: Colors.white.withOpacity(0.4),
-                fontSize: 16,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Make sure the server is advertising',
-              style: TextStyle(
-                color: Colors.white.withOpacity(0.3),
-                fontSize: 13,
-              ),
-            ),
-          ],
-        ),
+      return _buildEmptyState(
+        icon: _controller.isScanning
+            ? Icons.bluetooth_searching_rounded
+            : Icons.bluetooth_disabled_rounded,
+        title: _controller.isScanning ? 'Scanning...' : 'No devices found',
+        subtitle: _controller.isScanning
+            ? 'Looking for BLE servers nearby'
+            : 'Tap Scan to search for servers',
       );
     }
 
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: devices.length,
-      itemBuilder: (context, index) {
-        final result = devices[index];
-        return _buildDeviceCard(result);
-      },
+      itemBuilder: (context, index) => _buildDeviceCard(devices[index]),
     );
   }
 
@@ -348,16 +351,18 @@ class _ClientChatScreenState extends State<ClientChatScreen> {
             ? device.platformName
             : 'Unknown Device';
     final rssi = result.rssi;
-    
+    final rssiColor = rssi >= -50
+        ? const Color(0xFF22D3A5)
+        : rssi >= -70
+            ? const Color(0xFFF59E0B)
+            : const Color(0xFFF43F5E);
+
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
-        color: const Color(0xFF21262D),
+        color: const Color(0xFF0F1020),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: const Color(0xFF00FF94).withOpacity(0.2),
-          width: 1,
-        ),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.07), width: 1),
       ),
       child: Material(
         color: Colors.transparent,
@@ -369,19 +374,19 @@ class _ClientChatScreenState extends State<ClientChatScreen> {
             child: Row(
               children: [
                 Container(
-                  width: 50,
-                  height: 50,
+                  width: 46,
+                  height: 46,
                   decoration: BoxDecoration(
-                    color: const Color(0xFF00FF94).withOpacity(0.1),
+                    color: const Color(0xFF5B7BFE).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Icon(
-                    Icons.bluetooth,
-                    color: Color(0xFF00FF94),
-                    size: 24,
+                    Icons.bluetooth_rounded,
+                    color: Color(0xFF5B7BFE),
+                    size: 22,
                   ),
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: 14),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -390,16 +395,17 @@ class _ClientChatScreenState extends State<ClientChatScreen> {
                         name,
                         style: const TextStyle(
                           color: Colors.white,
-                          fontSize: 16,
+                          fontSize: 15,
                           fontWeight: FontWeight.w600,
+                          letterSpacing: -0.1,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 3),
                       Text(
                         device.remoteId.str,
                         style: TextStyle(
-                          color: Colors.white.withOpacity(0.4),
-                          fontSize: 12,
+                          color: Colors.white.withValues(alpha: 0.3),
+                          fontSize: 11,
                           fontFamily: 'monospace',
                         ),
                       ),
@@ -411,27 +417,26 @@ class _ClientChatScreenState extends State<ClientChatScreen> {
                   children: [
                     Row(
                       children: [
-                        Icon(
-                          Icons.signal_cellular_alt,
-                          color: _getRssiColor(rssi),
-                          size: 16,
-                        ),
-                        const SizedBox(width: 4),
+                        Icon(Icons.signal_cellular_alt_rounded,
+                            color: rssiColor, size: 14),
+                        const SizedBox(width: 3),
                         Text(
                           '$rssi dBm',
                           style: TextStyle(
-                            color: _getRssiColor(rssi),
-                            fontSize: 12,
+                            color: rssiColor,
+                            fontSize: 11.5,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 4),
-                    const Icon(
-                      Icons.arrow_forward_ios,
-                      color: Colors.white24,
-                      size: 16,
+                    const SizedBox(height: 6),
+                    Text(
+                      'Tap to connect',
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.2),
+                        fontSize: 10.5,
+                      ),
                     ),
                   ],
                 ),
@@ -443,10 +448,64 @@ class _ClientChatScreenState extends State<ClientChatScreen> {
     );
   }
 
-  Color _getRssiColor(int rssi) {
-    if (rssi >= -50) return const Color(0xFF00FF94);
-    if (rssi >= -70) return const Color(0xFFFFD60A);
-    return const Color(0xFFFF453A);
+  Widget _buildMessageList() {
+    final messages = _controller.messages;
+
+    if (messages.isEmpty) {
+      return _buildEmptyState(
+        icon: Icons.chat_bubble_outline_rounded,
+        title: 'Connected!',
+        subtitle: 'Send a message to get started',
+      );
+    }
+
+    return ListView.builder(
+      controller: _scrollController,
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+      itemCount: messages.length,
+      itemBuilder: (context, index) => ChatBubble(
+        message: messages[index],
+        isMe: messages[index].isSent,
+      ),
+    );
+  }
+
+  Widget _buildEmptyState({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+  }) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 40),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 56, color: Colors.white.withValues(alpha: 0.12)),
+            const SizedBox(height: 20),
+            Text(
+              title,
+              style: TextStyle(
+                color: Colors.white.withValues(alpha: 0.55),
+                fontSize: 17,
+                fontWeight: FontWeight.w600,
+                letterSpacing: -0.2,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              subtitle,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white.withValues(alpha: 0.25),
+                fontSize: 13.5,
+                height: 1.5,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Future<void> _connectToDevice(BluetoothDevice device) async {
@@ -454,60 +513,13 @@ class _ClientChatScreenState extends State<ClientChatScreen> {
     if (!success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to connect: ${_controller.status}'),
-          backgroundColor: const Color(0xFFFF453A),
+          content: Text(_controller.status),
+          backgroundColor: const Color(0xFFF43F5E),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          margin: const EdgeInsets.all(16),
         ),
       );
     }
-  }
-
-  Widget _buildMessageList() {
-    final messages = _controller.messages;
-    
-    if (messages.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.chat_bubble_outline,
-              size: 64,
-              color: Colors.white.withOpacity(0.2),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Connected!',
-              style: TextStyle(
-                color: Colors.white.withOpacity(0.6),
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Start typing to send a message',
-              style: TextStyle(
-                color: Colors.white.withOpacity(0.3),
-                fontSize: 13,
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-
-    return ListView.builder(
-      controller: _scrollController,
-      padding: const EdgeInsets.all(16),
-      itemCount: messages.length,
-      itemBuilder: (context, index) {
-        final message = messages[index];
-        return ChatBubble(
-          message: message,
-          isMe: message.isSent,
-        );
-      },
-    );
   }
 }
-
