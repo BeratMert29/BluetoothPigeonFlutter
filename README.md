@@ -29,10 +29,6 @@ The app uses BLE scanning, advertising, and connections to allow nearby devices 
 
 ## 📱 Supported Platforms
 - Android ✅ (recommended)
-- iOS ⚠️ (with platform limitations)
-- Desktop / Web ❌ (BLE not supported)
-
-> BLE functionality works best on **real devices**, not emulators.
 
 ---
 
